@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <title>Fluffy Pink Unicorn Dance</title>
+
 <style>
   body {
     margin: 0;
@@ -53,14 +54,17 @@
     100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
   }
 
-  .music {
+  .hint {
     position: absolute;
     bottom: 10px;
     left: 10px;
+    font-size: 14px;
+    color: #ff69b4;
     z-index: 3;
   }
 </style>
 </head>
+
 <body>
 
 <div class="stage">
@@ -68,19 +72,12 @@
   <h2 style="color:#ff69b4;">Fluffy Pink Unicorn Dance Party</h2>
 </div>
 
-<!-- Sparkles -->
 <div class="sparkles" id="sparkles"></div>
 
-<!-- Music (Firework by Katy Perry) -->
-<div class="music">
-  <iframe width="200" height="113"
-    src="https://www.youtube.com/embed/QGJuMBdaqIw?autoplay=1&loop=1&playlist=QGJuMBdaqIw"
-    title="Firework - Katy Perry"
-    frameborder="0"
-    allow="autoplay; encrypted-media"
-    allowfullscreen>
-  </iframe>
-</div>
+<div class="hint">Press SPACE to play/pause music 🎵</div>
+
+<!-- YouTube player (hidden) -->
+<div id="player"></div>
 
 <script>
   const sparklesContainer = document.getElementById("sparkles");
@@ -101,6 +98,45 @@
   }
 
   setInterval(createSparkle, 200);
+
+  // --- YouTube API setup ---
+  let player;
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      height: '0',
+      width: '0',
+      videoId: 'QGJuMBdaqIw', // Firework - Katy Perry
+      playerVars: {
+        autoplay: 0,
+        loop: 1,
+        playlist: 'QGJuMBdaqIw'
+      }
+    });
+  }
+
+  // Load YouTube API
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+
+  // Spacebar control
+  document.addEventListener("keydown", function(e) {
+    if (e.code === "Space") {
+      e.preventDefault(); // stop page scroll
+
+      if (player && player.getPlayerState) {
+        const state = player.getPlayerState();
+
+        // 1 = playing, 2 = paused
+        if (state === 1) {
+          player.pauseVideo();
+        } else {
+          player.playVideo();
+        }
+      }
+    }
+  });
 </script>
 
 </body>
